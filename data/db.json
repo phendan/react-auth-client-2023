@@ -1,0 +1,24 @@
+{
+    "blogposts": [
+        {
+            "id": "1",
+            "title": "How to get rich in 7 steps",
+            "slug": "how-to-get-rich-in-7-steps"
+        },
+        {
+            "id": "2",
+            "title": "How to learn react easy",
+            "slug": "how-to-learn-react-easy"
+        }
+    ],
+    "how-to-get-rich-in-7-steps": {
+        "id": "1",
+        "title": "How to get rich in 7 steps",
+        "slug": "how-to-get-rich-in-7-steps"
+    },
+    "how-to-learn-react-easy": {
+        "id": "2",
+        "title": "How to learn react easy",
+        "slug": "how-to-learn-react-easy"
+    }
+}
