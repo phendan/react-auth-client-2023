@@ -7,6 +7,11 @@ const RootLayout = () => {
 
     const handleLogout = () => {
         setAuth(defaultAuth);
+    const handleLogout = async () => {
+        try {
+            await http.get('/api/auth/logout');
+            setAuth(defaultAuth);
+        } catch {}
     };
 
     return (
