@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { DevTool } from '@hookform/devtools';
 import { AuthContext } from '../context/AuthProvider';
 import { useLocation, useNavigate } from 'react-router-dom';
+import http from '../utils/http';
 
 // React Hook Form installieren
 // npm install react-hook-form
@@ -25,10 +26,9 @@ const Login = () => {
         register,
         control,
         handleSubmit,
-        formState: { errors, isSubmitting }
+        formState: { errors, isSubmitting },
+        setError
     } = form;
-
-    console.log(auth);
 
     // Wenn Nutzer von einer Private Route kam
     // dann wollen wir dahin nach Login zurück
@@ -36,43 +36,32 @@ const Login = () => {
     // den Nutzer an die Homepage
     const { from = '/' } = state || {};
 
-    const login = {
-        id: 1,
-        username: 'Tom',
-        email: 'asd@asd.de',
-        password: 'asd',
-        role: 'user'
-    };
-
     // Diese Funktion wird nur ausgeführt, wenn alle Felder
     // korrekt validiert sind
     const onSubmit = async (data: FormValues) => {
         // Logik für den Login
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        console.log('Formular Submit');
-        if (data.email === login.email && data.password === login.password) {
-            setAuth(prevAuth => {
-                let role = null;
+        try {
+            await http.get('/sanctum/csrf-cookie');
+            const response = await http.post('/api/auth/login', data);
+            const userData = response.data;
 
-                if (login.role === 'admin') {
-                    role = login.role as 'admin';
-                }
-                if (login.role === 'user') {
-                    role = login.role as 'user';
-                }
-
-                return {
-                    ...prevAuth,
-                    id: login.id,
-                    username: login.username,
-                    role: role
-                };
-            });
+            setAuth({ ...userData, role: userData.role ?? 'user' });
             navigate(from);
+        } catch (exception: any) {
+            const errors = exception.response.data.errors;
+
+            for (let [fieldName, errorList] of Object.entries(errors)) {
+                type Field = 'email' | 'password' | 'root';
+                const errors = (errorList as any[]).map(message => ({ message }));
+                console.log(fieldName, errors);
+                setError(fieldName as Field, errors[0]);
+            }
         }
-        // Request ans Backend -> Email & Password
-        // vom Backend -> Daten vom Nutzer { id, username, role } || httponly cookie & same-site attribut
+
+        console.log('Formular Submit');
     };
+    // Request ans Backend -> Email & Password
+    // vom Backend -> Daten vom Nutzer { id, username, role } || httponly cookie & same-site attribut
 
     /* // Muss ein unerwarteter Fehler sein
   throw new Error("Fehler !!! Login falsch !!!"); */
@@ -85,6 +74,7 @@ const Login = () => {
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit, onError)} noValidate>
+                <p style={{ color: 'red' }}>{JSON.stringify(errors.root?.message)}</p>
                 <label htmlFor="email">E-Mail</label>
                 <input
                     type="email"
