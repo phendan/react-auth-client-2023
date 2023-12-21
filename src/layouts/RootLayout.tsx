@@ -1,12 +1,20 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { AuthContext, defaultAuth } from '../context/AuthProvider';
+import http from '../utils/http';
 
 const RootLayout = () => {
     const { auth, setAuth } = useContext(AuthContext);
 
-    const handleLogout = () => {
-        setAuth(defaultAuth);
+    const getInitialAuth = async () => {
+        try {
+            const response = await http.get('api/auth/user');
+            setAuth({ ...response.data, role: 'user' });
+        } catch {}
+    };
+
+    useEffect(() => void getInitialAuth(), []);
+
     const handleLogout = async () => {
         try {
             await http.get('/api/auth/logout');
