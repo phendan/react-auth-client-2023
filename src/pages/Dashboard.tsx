@@ -1,9 +1,15 @@
+import { AuthContext } from '../context/AuthProvider';
+import { useContext } from 'react';
+
 const Dashboard = () => {
-  return (
-    <div>
-      <p>Du hast 1000€ verdient</p>
-    </div>
-  );
+    const { auth } = useContext(AuthContext);
+
+    return (
+        <div>
+            <code>{JSON.stringify(auth)}</code>
+            <p>Du hast 1000€ verdient</p>
+        </div>
+    );
 };
 
 export default Dashboard;

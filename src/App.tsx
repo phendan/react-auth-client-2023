@@ -29,6 +29,9 @@ const router = createBrowserRouter(
 
                 <Route element={<ProtectedLayout role="admin" />}>
                     <Route path="/dashboard" element={<Dashboard />} />
+                </Route>
+
+                <Route element={<ProtectedLayout role="user" />}>
                     <Route path="/profile" element={<Dashboard />} />
                 </Route>
 
